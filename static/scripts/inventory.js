@@ -2,10 +2,13 @@
  * Created by Administrator on 2017/12/14.
  */
 
+var arrThroughputSum = [0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0];
+var arrThroughput = [0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0];
+
 $(document).ready(function () {
 
     var myChart
-    var arr = [0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0];
+
     // 路径配置
     require.config({
         paths: {
@@ -60,7 +63,7 @@ $(document).ready(function () {
                         type: 'line',
                         stack: '总量',
                         itemStyle: {normal: {areaStyle: {type: 'default'}}},
-                        data: [720, 332, 601, 534, 490, 230, 210,720, 332, 601, 534, 490, 230]
+                        data: [0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0]
                     },
                     {
                         name: '总吞吐量',
@@ -80,23 +83,29 @@ $(document).ready(function () {
     document.session = $('#session').val();
 
     //更新数据
-    function refreshData(data) {
+    function refreshData(dataThroughput,dataThroughputSum) {
         if (!myChart) {
             return;
         }
 
         //更新数据
         var option = myChart.getOption();
-        option.series[1].data = data;
+        option.series[0].data = dataThroughput;
+        option.series[1].data = dataThroughputSum;
         myChart.setOption(option);
     }
 
     //每隔5000毫秒刷新一次数据
     window.setInterval(function () {
+        var throughputSumArr = arrThroughputSum;
+        var throughputArr = arrThroughput;
 
-        arr.unshift(Math.random()*1000)
-        arr.slice(0,13);
-        refreshData(arr);
+        throughputSumArr.unshift(arrThroughputSum[0]);
+        throughputArr.unshift(arrThroughput[0]);
+
+        throughputSumArr.slice(0,13);
+        throughputArr.slice(0,13);
+        refreshData(throughputArr,throughputSumArr);
     }, 5000);
 
 
@@ -151,6 +160,16 @@ function requestInventory() {
         $('#delaySum').html($.parseJSON(evt.data)['delaySum']);
         $('#delayAvg').html($.parseJSON(evt.data)['delayAvg']);
         $('#lossRate').html($.parseJSON(evt.data)['lossRate']);
+
+        if ($.parseJSON(evt.data)['throughputSum'] != null){
+            arrThroughputSum.unshift(parseInt($.parseJSON(evt.data)['throughputSum']));
+            console.log(arrThroughputSum);
+        }
+        if ($.parseJSON(evt.data)['throughput'] != null){
+            arrThroughput.unshift(parseInt($.parseJSON(evt.data)['throughput']));
+            console.log(arrThroughput);
+        }
+
         //$('#layer').html()
     };
     websocket.onerror = function (evt) {
