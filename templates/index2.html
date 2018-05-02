@@ -59,7 +59,7 @@
             <a href="#test1">网络性能实时显示</a>
         </li>
         <li class="tab">
-            <a href="#test2">##</a>
+            <a href="#test2">只显示图表</a>
         </li>
     </ul>
 </div>
@@ -81,6 +81,8 @@
                 <p><strong>总时延： <span id="delaySum">{{ delaySum }} </span> s</strong></p>
                 <p><strong>平均端到端时延： <span id="delayAvg">{{ delayAvg }} </span> s</strong></p>
                 <p><strong>丢包率： <span id="lossRate">{{ lossRate }}</span></strong></p>
+                <p><strong>发送包数量： <span id="sendDataNum">{{ sendDataNum }}</span></strong></p>
+                <p><strong>接收包数量： <span id="recvDataNum">{{ recvDataNum }}</span></strong></p>
                 <p><input type="submit" value="显示数据" id="show-data"/></p>
             </div>
 

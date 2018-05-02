@@ -112,7 +112,7 @@ $(document).ready(function () {
     //每次新用户打开一个新窗口都会调用这个WebScoket方法
     setTimeout(requestInventory, 100);
 
-    //点击添加到购物车之后触发这个回调函数
+    //点击显示数据之后触发这个回调函数
     $('#show-data').click(function (event) {
         jQuery.ajax({
             url: '//localhost:8000/cart',
@@ -128,7 +128,9 @@ $(document).ready(function () {
                 delay: 1.2,
                 delaySum: 2.4,
                 delayAvg: 1.2,
-                lossRate: 0.8
+                lossRate: 0.8,
+                sendDataNum:0,
+                recvDataNum:0
             },
             dataType: 'json',
             beforeSend: function (xhr, settings) {
@@ -160,6 +162,8 @@ function requestInventory() {
         $('#delaySum').html($.parseJSON(evt.data)['delaySum']);
         $('#delayAvg').html($.parseJSON(evt.data)['delayAvg']);
         $('#lossRate').html($.parseJSON(evt.data)['lossRate']);
+        $('#sendDataNum').html($.parseJSON(evt.data)['sendDataNum']);
+        $('#recvDataNum').html($.parseJSON(evt.data)['recvDataNum']);
 
         if ($.parseJSON(evt.data)['throughputSum'] != null){
             arrThroughputSum.unshift(parseInt($.parseJSON(evt.data)['throughputSum']));

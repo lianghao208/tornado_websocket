@@ -1,0 +1,10 @@
+一、静态页面：/templates
+    主页：/static/index2.html
+    图表：/static/chart.html
+
+二、静态页面逻辑：
+    javascript逻辑：/static/scripts/inventory.js
+
+三、后端逻辑：web_socket_trace.py
+    首页界面渲染：web_socket_trace.py/IndexHandler
+    websocket更新数据：/static/scripts/inventory.js/requestInventory()

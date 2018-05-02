@@ -28,7 +28,9 @@ class TraceData(object):
                        delay,
                        delaySum,
                        delayAvg,
-                       lossRate
+                       lossRate,
+                       sendDataNum,
+                       recvDataNum
                        ):
         #if session in self.carts:
          #   return
@@ -42,7 +44,10 @@ class TraceData(object):
                             delay,
                             delaySum,
                             delayAvg,
-                            lossRate)  # 2.调用该方法，说明有其中一个会话在减库存，需要告诉其它会话已经更新库存
+                            lossRate,
+                            sendDataNum,
+                            recvDataNum
+                             )  # 2.调用该方法，说明有其中一个会话在减库存，需要告诉其它会话已经更新库存
 
     def removeItemFromCart(self, session):
         if session not in self.carts:
@@ -60,7 +65,9 @@ class TraceData(object):
                         delay,
                         delaySum,
                         delayAvg,
-                        lossRate
+                        lossRate,
+                        sendDataNum,
+                        recvDataNum
                         ):
         for callback in self.callbacks:
             # callback(self.getInventoryCount())  # 3.调用该方法，从list中将每个会话的回调取出，依次发送最新的库存数
@@ -72,13 +79,16 @@ class TraceData(object):
                     delay,
                     delaySum,
                     delayAvg,
-                    lossRate);
+                    lossRate,
+                    sendDataNum,
+                    recvDataNum
+                    );
 
 
 
 
 # 显示首页
-class DetailHandler(tornado.web.RequestHandler):
+class IndexHandler(tornado.web.RequestHandler):
     def get(self):
         session = uuid4()
         layer = '*'
@@ -90,6 +100,8 @@ class DetailHandler(tornado.web.RequestHandler):
         delaySum= 0.0
         delayAvg= 0.0
         lossRate= 0.0
+        sendDataNum=0
+        recvDataNum=0
         self.render("index2.html",
                     session=session,
                     layer=layer,
@@ -101,6 +113,8 @@ class DetailHandler(tornado.web.RequestHandler):
                     delaySum = delaySum,
                     delayAvg = delayAvg,
                     lossRate = lossRate,
+                    sendDataNum = sendDataNum,
+                    recvDataNum = recvDataNum
                     )
 
 
@@ -118,6 +132,8 @@ class CartHandler(tornado.web.RequestHandler):
         delaySum = self.get_argument('delaySum')
         delayAvg = self.get_argument('delayAvg')
         lossRate = self.get_argument('lossRate')
+        sendDataNum = self.get_argument('sendDataNum')
+        recvDataNum = self.get_argument('recvDataNum')
 
         if not session:
             self.set_status(400)
@@ -133,7 +149,10 @@ class CartHandler(tornado.web.RequestHandler):
                                                       delay,
                                                       delaySum,
                                                       delayAvg,
-                                                      lossRate) # 1.调用该方法将会话Session传递
+                                                      lossRate,
+                                                      sendDataNum,
+                                                      recvDataNum
+                                                      ) # 1.调用该方法将会话Session传递
         elif action == 'remove':
             self.application.traceData.removeItemFromCart(session)
         else:
@@ -163,7 +182,9 @@ class StatusHandler(tornado.websocket.WebSocketHandler):
                  delay,
                  delaySum,
                  delayAvg,
-                 lossRate
+                 lossRate,
+                 sendDataNum,
+                 recvDataNum
                  ):
         self.write_message('{"layer":"%s"}' % layer)
         self.write_message('{"dataSize":"%s"}' % dataSize) # 将message数据传递回客户端窗口
@@ -174,6 +195,8 @@ class StatusHandler(tornado.websocket.WebSocketHandler):
         self.write_message('{"delaySum":"%s"}' % delaySum) # 将message数据传递回客户端窗口
         self.write_message('{"delayAvg":"%s"}' % delayAvg) # 将message数据传递回客户端窗口
         self.write_message('{"lossRate":"%s"}' % lossRate) # 将message数据传递回客户端窗口
+        self.write_message('{"sendDataNum":"%s"}' % sendDataNum) # 将message数据传递回客户端窗口
+        self.write_message('{"recvDataNum":"%s"}' % recvDataNum) # 将message数据传递回客户端窗口
 
 
 class ChartHandler(tornado.web.RequestHandler):
@@ -185,7 +208,7 @@ class Application(tornado.web.Application):
         self.traceData = TraceData()
 
         handlers = [
-            (r'/', DetailHandler),
+            (r'/', IndexHandler),
             (r'/cart', CartHandler),
             (r'/cart/status', StatusHandler),
             (r'/chart', ChartHandler)
